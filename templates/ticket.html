@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket de venta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+            font-family:'Inter',sans-serif;
+        }
+
+        body{
+            background:#eef2f7;
+            padding:30px;
+            color:#0f172a;
+        }
+
+        .wrapper{
+            max-width:520px;
+            margin:0 auto;
+        }
+
+        .ticket{
+            background:#fff;
+            border:2px dashed #94a3b8;
+            border-radius:24px;
+            padding:28px;
+            box-shadow:0 12px 30px rgba(15,23,42,.08);
+        }
+
+        .logo{
+            width:62px;
+            height:62px;
+            border-radius:18px;
+            background:#facc15;
+            display:grid;
+            place-items:center;
+            font-size:28px;
+            margin:0 auto 16px;
+        }
+
+        .ticket h1{
+            text-align:center;
+            font-size:30px;
+            margin-bottom:6px;
+        }
+
+        .ticket .sub{
+            text-align:center;
+            color:#64748b;
+            margin-bottom:4px;
+            font-size:14px;
+        }
+
+        .line{
+            border-top:1px dashed #cbd5e1;
+            margin:18px 0;
+        }
+
+        .info p{
+            margin-bottom:10px;
+            font-size:15px;
+        }
+
+        .item{
+            padding:12px 0;
+            border-bottom:1px solid #eef2f7;
+        }
+
+        .item:last-child{
+            border-bottom:none;
+        }
+
+        .item strong{
+            display:block;
+            margin-bottom:4px;
+        }
+
+        .item-row{
+            display:flex;
+            justify-content:space-between;
+            color:#475569;
+            font-size:14px;
+        }
+
+        .total{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            font-size:28px;
+            font-weight:800;
+        }
+
+        .thanks{
+            text-align:center;
+            color:#64748b;
+            margin-top:12px;
+            font-size:14px;
+        }
+
+        .actions{
+            display:flex;
+            justify-content:space-between;
+            gap:14px;
+            margin-top:22px;
+        }
+
+        .btn{
+            flex:1;
+            text-align:center;
+            text-decoration:none;
+            border:none;
+            border-radius:16px;
+            padding:14px 16px;
+            font-weight:700;
+            cursor:pointer;
+            font-size:14px;
+        }
+
+        .btn-back{
+            background:#e2e8f0;
+            color:#0f172a;
+        }
+
+        .btn-print{
+            background:#0f172a;
+            color:#fff;
+        }
+
+        @media print{
+            body{
+                background:#fff;
+                padding:0;
+            }
+
+            .actions{
+                display:none;
+            }
+
+            .ticket{
+                box-shadow:none;
+                border:none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="ticket">
+        <div class="logo">🌮</div>
+
+        <h1>Taquería Sistema</h1>
+        <p class="sub">Ticket de venta</p>
+        <p class="sub">Atendió: {{ usuario }}</p>
+
+        <div class="line"></div>
+
+        <div class="info">
+            <p><strong>Venta #:</strong> {{ ticket.id_venta }}</p>
+            <p><strong>Pedido #:</strong> {{ ticket.id_pedido }}</p>
+            <p><strong>Fecha:</strong> {{ ticket.fecha | fecha_bonita }}</p>
+            <p><strong>Mesa:</strong> {{ ticket.mesa }}</p>
+        </div>
+
+        <div class="line"></div>
+
+        {% for item in detalles %}
+        <div class="item">
+            <strong>{{ item.producto }}</strong>
+            <div class="item-row">
+                <span>Cantidad: {{ item.cantidad }}</span>
+                <span>Subtotal: ${{ item.subtotal }}</span>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="line"></div>
+
+        <div class="total">
+            <span>Total</span>
+            <span>${{ ticket.total }}</span>
+        </div>
+
+        <div class="line"></div>
+
+        <p class="thanks">¡Gracias por su compra! 🙌</p>
+
+        <div class="actions">
+            <a href="/ventas" class="btn btn-back">⬅ Volver</a>
+            <button onclick="window.print()" class="btn btn-print">🖨 Imprimir</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

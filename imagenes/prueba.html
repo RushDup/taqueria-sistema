@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vista previa UI profesional - Taquería</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Inter',system-ui,sans-serif;
+      background:#eef2f7;
+      color:#0f172a;
+    }
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:18px 24px;
+      background:#fff;
+      border-bottom:1px solid #e2e8f0;
+      position:sticky;
+      top:0;
+      z-index:50;
+    }
+    .title h1{margin:0;font-size:24px;font-weight:800}
+    .title p{margin:4px 0 0;color:#64748b;font-size:14px}
+    .role-switch{display:flex;gap:8px;flex-wrap:wrap}
+    .role-btn{
+      border:1px solid #cbd5e1;
+      background:#fff;
+      color:#0f172a;
+      border-radius:12px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .role-btn.active{background:#0f172a;color:#fff;border-color:#0f172a}
+    .wrap{padding:24px;display:grid;grid-template-columns:420px 1fr;gap:24px}
+    .card{
+      background:#fff;
+      border-radius:24px;
+      box-shadow:0 10px 30px rgba(15,23,42,.08);
+      overflow:hidden;
+    }
+    .section-head{padding:22px 22px 0}
+    .section-head h2{margin:0;font-size:22px}
+    .section-head p{margin:8px 0 0;color:#64748b;font-size:14px}
+
+    .login-preview{
+      min-height:760px;
+      padding:24px;
+      background:radial-gradient(circle at top,#3b82f6 0%,#1e293b 42%,#0f172a 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .login-box{
+      width:100%;
+      max-width:360px;
+      background:rgba(255,255,255,.96);
+      border-radius:28px;
+      padding:28px;
+      box-shadow:0 20px 50px rgba(0,0,0,.24);
+    }
+    .login-logo{
+      width:58px;height:58px;border-radius:18px;background:#facc15;
+      display:grid;place-items:center;font-size:28px;margin:0 auto 16px;
+    }
+    .login-box h3{margin:0;text-align:center;font-size:28px}
+    .login-sub{margin:8px 0 18px;text-align:center;color:#64748b;font-size:14px}
+    .alert{
+      background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;
+      border-radius:14px;padding:12px 14px;font-size:14px;margin-bottom:14px;text-align:center
+    }
+    label{display:block;font-size:14px;font-weight:600;margin:0 0 8px}
+    .input{width:100%;padding:14px 14px;border:1px solid #dbe3ee;border-radius:14px;font-size:14px;outline:none}
+    .field{margin-bottom:14px}
+    .password-wrap{position:relative}
+    .eye{
+      position:absolute;right:12px;top:50%;transform:translateY(-50%);
+      color:#64748b;font-size:18px;cursor:pointer;user-select:none
+    }
+    .btn{
+      border:none;border-radius:16px;padding:14px 18px;cursor:pointer;font-weight:700
+    }
+    .btn-dark{background:#0f172a;color:#fff;width:100%;font-size:15px}
+
+    .app-preview{padding:22px;background:#f8fafc}
+    .app-shell{display:grid;grid-template-columns:280px 1fr;gap:18px;min-height:760px}
+    .sidebar{
+      background:#020617;color:#fff;border-radius:30px;padding:18px;display:flex;flex-direction:column
+    }
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+    .brand-logo{width:48px;height:48px;border-radius:18px;background:#facc15;color:#111827;display:grid;place-items:center;font-size:24px;font-weight:800}
+    .brand strong{display:block}
+    .brand small{color:#94a3b8}
+    .role-box{background:rgba(255,255,255,.06);border-radius:20px;padding:14px;margin-bottom:18px}
+    .role-box p{margin:0 0 8px;font-size:12px;color:#94a3b8}
+    .nav{display:grid;gap:8px}
+    .nav-item{padding:13px 14px;border-radius:18px;color:#e2e8f0;background:transparent}
+    .nav-item.active,.nav-item:hover{background:rgba(255,255,255,.08)}
+    .logout{margin-top:auto;background:#fff;color:#0f172a}
+
+    .content{display:grid;gap:18px}
+    .hero{background:#fff;border-radius:30px;padding:20px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .hero h3{margin:0;font-size:30px}
+    .hero p{margin:6px 0 0;color:#64748b}
+    .search{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:12px 14px;min-width:250px;color:#64748b}
+
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .stat{background:#fff;border-radius:24px;padding:18px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
+    .stat p{margin:0;color:#64748b;font-size:13px}
+    .stat h4{margin:12px 0 6px;font-size:32px}
+    .stat small{color:#94a3b8}
+
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    .tab-btn{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:10px 14px;cursor:pointer;font-weight:600}
+    .tab-btn.active{background:#0f172a;color:#fff;border-color:#0f172a}
+    .panel{display:none;background:#fff;border-radius:30px;padding:22px;box-shadow:0 10px 30px rgba(15,23,42,.06)}
+    .panel.active{display:block}
+    .panel h4{margin:0 0 6px;font-size:22px}
+    .panel .sub{margin:0 0 18px;color:#64748b}
+
+    .form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+    .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .product-card{border:1px solid #e2e8f0;border-radius:26px;overflow:hidden;background:#fff}
+    .product-card img{width:100%;height:170px;object-fit:cover;display:block}
+    .product-body{padding:14px}
+    .product-body h5{margin:0 0 6px;font-size:17px}
+    .muted{color:#64748b;font-size:14px}
+    .price{display:inline-block;margin-top:10px;background:#f8fafc;border-radius:999px;padding:8px 12px;font-weight:700}
+    .actions{display:flex;gap:10px;margin-top:14px}
+    .btn-outline{background:#fff;border:1px solid #cbd5e1;color:#0f172a;flex:1}
+    .btn-red{background:#ef4444;color:#fff;flex:1}
+
+    .order-layout{display:grid;grid-template-columns:320px 1fr;gap:16px}
+    .order-box,.order-table-wrap{border:1px solid #e2e8f0;border-radius:24px;padding:16px}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:14px 10px;border-bottom:1px solid #e2e8f0;text-align:left;font-size:14px}
+    .table th{color:#475569}
+    .total{text-align:right;font-size:22px;font-weight:800;margin-top:18px}
+    .right-actions{display:flex;justify-content:flex-end;margin-top:14px}
+    .btn-green{background:#16a34a;color:#fff}
+
+    .badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:700;font-size:12px}
+    .badge-success{background:#dcfce7;color:#15803d}
+    .badge-pending{background:#fef3c7;color:#b45309}
+
+    .ticket-wrap{display:grid;place-items:center}
+    .ticket{
+      width:100%;max-width:420px;border:1px dashed #334155;border-radius:18px;padding:24px;background:#fff
+    }
+    .ticket h5{margin:0;text-align:center;font-size:24px}
+    .ticket p{margin:6px 0}
+    .line{border-top:1px dashed #94a3b8;margin:14px 0}
+    .ticket-total{display:flex;justify-content:space-between;font-size:22px;font-weight:800}
+    .ticket-actions{display:flex;justify-content:space-between;gap:12px;margin-top:18px}
+
+    @media (max-width: 1200px){
+      .wrap{grid-template-columns:1fr}
+      .app-shell{grid-template-columns:1fr}
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .product-grid{grid-template-columns:repeat(2,1fr)}
+      .order-layout{grid-template-columns:1fr}
+      .form-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width: 680px){
+      .stats,.product-grid,.form-grid{grid-template-columns:1fr}
+      .hero{flex-direction:column;align-items:flex-start}
+      .search{min-width:100%;width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="title">
+      <h1>Vista previa profesional</h1>
+      <p>Así podría verse tu sistema antes de cambiar el proyecto actual.</p>
+    </div>
+    <div class="role-switch">
+      <button class="role-btn active" data-role="admin">Admin</button>
+      <button class="role-btn" data-role="mesero">Mesero</button>
+      <button class="role-btn" data-role="cajero">Cajero</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="card">
+      <div class="section-head">
+        <h2>Login propuesto</h2>
+        <p>Con mejor jerarquía visual, error integrado y ojito más limpio.</p>
+      </div>
+      <div class="login-preview">
+        <div class="login-box">
+          <div class="login-logo">🌮</div>
+          <h3>Taquería Login</h3>
+          <p class="login-sub">Accede con tu usuario y contraseña</p>
+          <div class="alert">Usuario o contraseña incorrectos</div>
+          <div class="field">
+            <label>Usuario</label>
+            <input class="input" placeholder="Ingresa tu usuario" />
+          </div>
+          <div class="field">
+            <label>Contraseña</label>
+            <div class="password-wrap">
+              <input id="previewPassword" type="password" class="input" placeholder="••••••••" />
+              <span id="eyeBtn" class="eye">👁</span>
+            </div>
+          </div>
+          <button class="btn btn-dark">Iniciar sesión</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>App propuesta</h2>
+        <p>Dashboard, productos, pedido múltiple, ventas y ticket en un estilo más profesional.</p>
+      </div>
+      <div class="app-preview">
+        <div class="app-shell">
+          <aside class="sidebar">
+            <div class="brand">
+              <div class="brand-logo">🌮</div>
+              <div>
+                <strong>Taquería Sistema</strong>
+                <small>Vista profesional</small>
+              </div>
+            </div>
+            <div class="role-box">
+              <p>Rol activo</p>
+              <strong id="roleLabel">admin</strong>
+            </div>
+            <div class="nav" id="sideNav"></div>
+            <button class="btn logout">Cerrar sesión</button>
+          </aside>
+
+          <main class="content">
+            <div class="hero">
+              <div>
+                <h3 id="heroTitle">Panel admin</h3>
+                <p>Un look más limpio, moderno y fácil de explicar en tu proyecto.</p>
+              </div>
+              <input class="search" placeholder="Buscar producto, pedido o venta" />
+            </div>
+
+            <div class="stats" id="statsGrid"></div>
+
+            <div class="tabs" id="tabs"></div>
+
+            <section class="panel active" id="panel-products">
+              <h4>Gestión de productos</h4>
+              <p class="sub">Tarjetas con imagen más grande y acciones claras.</p>
+              <div class="form-grid">
+                <input class="input" placeholder="Nombre del producto" />
+                <input class="input" placeholder="Precio" />
+                <input class="input" placeholder="Categoría" />
+                <button class="btn btn-dark">Agregar producto</button>
+              </div>
+              <div class="product-grid">
+                <div class="product-card">
+                  <img src="https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?q=80&w=1200&auto=format&fit=crop" alt="Quesabirria">
+                  <div class="product-body">
+                    <h5>Quesabirria</h5>
+                    <div class="muted">Especialidades</div>
+                    <span class="price">$65</span>
+                    <div class="actions">
+                      <button class="btn btn-outline">Editar</button>
+                      <button class="btn btn-red">Eliminar</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="product-card">
+                  <img src="https://images.unsplash.com/photo-1613514785940-daed07799d9b?q=80&w=1200&auto=format&fit=crop" alt="Taco al pastor">
+                  <div class="product-body">
+                    <h5>Taco al pastor</h5>
+                    <div class="muted">Tacos</div>
+                    <span class="price">$18</span>
+                    <div class="actions">
+                      <button class="btn btn-outline">Editar</button>
+                      <button class="btn btn-red">Eliminar</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="product-card">
+                  <img src="https://images.unsplash.com/photo-1629203851122-3726ecdf080e?q=80&w=1200&auto=format&fit=crop" alt="Refresco">
+                  <div class="product-body">
+                    <h5>Refresco</h5>
+                    <div class="muted">Bebidas</div>
+                    <span class="price">$20</span>
+                    <div class="actions">
+                      <button class="btn btn-outline">Editar</button>
+                      <button class="btn btn-red">Eliminar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" id="panel-orders">
+              <h4>Pedido múltiple</h4>
+              <p class="sub">Un pedido con varios productos, como en la lógica correcta de tu documento.</p>
+              <div class="order-layout">
+                <div class="order-box">
+                  <input class="input" placeholder="Buscar producto" style="margin-bottom:12px" />
+                  <input class="input" placeholder="Cantidad" style="margin-bottom:12px" />
+                  <input class="input" placeholder="Mesa" style="margin-bottom:12px" />
+                  <button class="btn btn-dark" style="width:100%">Agregar al pedido</button>
+                </div>
+                <div class="order-table-wrap">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Quesabirria</td><td>2</td><td>$130</td><td><button class="btn btn-red">Quitar</button></td></tr>
+                      <tr><td>Taco al pastor</td><td>3</td><td>$54</td><td><button class="btn btn-red">Quitar</button></td></tr>
+                      <tr><td>Refresco</td><td>1</td><td>$20</td><td><button class="btn btn-red">Quitar</button></td></tr>
+                    </tbody>
+                  </table>
+                  <div class="total">Total: $204</div>
+                  <div class="right-actions">
+                    <button class="btn btn-green">Finalizar pedido</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" id="panel-sales">
+              <h4>Ventas</h4>
+              <p class="sub">Cobro más claro con historial debajo.</p>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID Pedido</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>#22</td>
+                    <td>16/04/2026 - 02:26 AM</td>
+                    <td>$204</td>
+                    <td><span class="badge badge-pending">Pendiente</span></td>
+                    <td><button class="btn btn-green">Cobrar</button></td>
+                  </tr>
+                  <tr>
+                    <td>#21</td>
+                    <td>16/04/2026 - 01:55 AM</td>
+                    <td>$84</td>
+                    <td><span class="badge badge-success">Pagado</span></td>
+                    <td><button class="btn btn-outline">Ver</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="panel" id="panel-ticket">
+              <h4>Ticket</h4>
+              <p class="sub">Vista simple y limpia, lista para imprimir.</p>
+              <div class="ticket-wrap">
+                <div class="ticket">
+                  <h5>🌮 Taquería Sistema</h5>
+                  <p style="text-align:center;color:#64748b">Ticket de venta</p>
+                  <p style="text-align:center;color:#64748b">Atendió: cajero</p>
+                  <div class="line"></div>
+                  <p><strong>Venta #:</strong> 10</p>
+                  <p><strong>Pedido #:</strong> 22</p>
+                  <p><strong>Fecha:</strong> 16/04/2026 - 02:26 AM</p>
+                  <p><strong>Mesa:</strong> 1</p>
+                  <div class="line"></div>
+                  <p><strong>Quesabirria</strong> x2 — $130</p>
+                  <p><strong>Taco al pastor</strong> x3 — $54</p>
+                  <p><strong>Refresco</strong> x1 — $20</p>
+                  <div class="line"></div>
+                  <div class="ticket-total"><span>Total</span><span>$204</span></div>
+                  <div class="line"></div>
+                  <p style="text-align:center;color:#64748b">¡Gracias por su compra!</p>
+                  <div class="ticket-actions">
+                    <button class="btn btn-outline">Volver</button>
+                    <button class="btn btn-dark">Imprimir</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </main>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const roleButtons = document.querySelectorAll('.role-btn');
+    const roleLabel = document.getElementById('roleLabel');
+    const heroTitle = document.getElementById('heroTitle');
+    const sideNav = document.getElementById('sideNav');
+    const statsGrid = document.getElementById('statsGrid');
+    const tabs = document.getElementById('tabs');
+    const eyeBtn = document.getElementById('eyeBtn');
+    const previewPassword = document.getElementById('previewPassword');
+
+    const roleData = {
+      admin: {
+        title: 'Panel admin',
+        nav: ['Dashboard','Productos','Pedidos','Ventas','Ticket'],
+        stats: [
+          ['Productos','18','Menú disponible'],
+          ['Pedidos pendientes','4','En espera de cobro'],
+          ['Ventas','27','Registradas hoy'],
+          ['Ingresos','$2,430','Resumen del día']
+        ],
+        tabs: ['Productos','Pedido actual','Ventas','Ticket']
+      },
+      mesero: {
+        title: 'Panel mesero',
+        nav: ['Dashboard','Pedidos','Ticket'],
+        stats: [
+          ['Pedidos pendientes','4','En espera'],
+          ['Pedidos armados','2','En preparación'],
+          ['Productos','18','Disponibles'],
+          ['Atención','Activa','Turno actual']
+        ],
+        tabs: ['Pedido actual','Ticket']
+      },
+      cajero: {
+        title: 'Panel cajero',
+        nav: ['Dashboard','Ventas','Ticket'],
+        stats: [
+          ['Ventas','27','Registradas hoy'],
+          ['Ingresos','$2,430','Del turno'],
+          ['Pendientes','4','Por cobrar'],
+          ['Cobros rápidos','12','Última hora']
+        ],
+        tabs: ['Ventas','Ticket']
+      }
+    };
+
+    function renderRole(role){
+      roleLabel.textContent = role;
+      heroTitle.textContent = roleData[role].title;
+      roleButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.role === role));
+
+      sideNav.innerHTML = roleData[role].nav.map((item, i) =>
+        `<div class="nav-item ${i===0?'active':''}">${item}</div>`
+      ).join('');
+
+      statsGrid.innerHTML = roleData[role].stats.map(([label,value,helper]) => `
+        <div class="stat">
+          <p>${label}</p>
+          <h4>${value}</h4>
+          <small>${helper}</small>
+        </div>
+      `).join('');
+
+      const tabMap = {
+        'Productos':'products',
+        'Pedido actual':'orders',
+        'Ventas':'sales',
+        'Ticket':'ticket'
+      };
+
+      tabs.innerHTML = roleData[role].tabs.map((item, i) =>
+        `<button class="tab-btn ${i===0?'active':''}" data-target="panel-${tabMap[item]}">${item}</button>`
+      ).join('');
+
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      const first = tabs.querySelector('.tab-btn');
+      if(first){
+        document.getElementById(first.dataset.target).classList.add('active');
+      }
+
+      tabs.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+          document.getElementById(btn.dataset.target).classList.add('active');
+        });
+      });
+    }
+
+    roleButtons.forEach(btn => btn.addEventListener('click', () => renderRole(btn.dataset.role)));
+    renderRole('admin');
+
+    eyeBtn.addEventListener('click', () => {
+      previewPassword.type = previewPassword.type === 'password' ? 'text' : 'password';
+      eyeBtn.textContent = previewPassword.type === 'password' ? '👁' : '🙈';
+    });
+  </script>
+</body>
+</html>

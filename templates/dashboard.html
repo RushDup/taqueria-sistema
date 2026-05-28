@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+
+    <h1>🌮 Taquería Sistema</h1>
+
+    <h2>🔥 Bienvenido {{ rol }}</h2>
+
+    <div style="display:flex; gap:20px;">
+
+        {% if rol == "admin" %}
+        <a href="/productos">
+            <div style="border:1px solid black; padding:20px;">
+                <h3>Productos</h3>
+                <p>Gestionar productos</p>
+            </div>
+        </a>
+        {% endif %}
+
+        {% if rol == "admin" or rol == "mesero" %}
+        <a href="/pedidos">
+            <div style="border:1px solid black; padding:20px;">
+                <h3>Pedidos</h3>
+                <p>Crear y gestionar pedidos</p>
+            </div>
+        </a>
+        {% endif %}
+
+        {% if rol == "admin" or rol == "cajero" %}
+        <a href="/ventas">
+            <div style="border:1px solid black; padding:20px;">
+                <h3>Ventas</h3>
+                <p>Ver ventas</p>
+            </div>
+        </a>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

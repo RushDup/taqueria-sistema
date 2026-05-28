@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+            font-family:'Inter',sans-serif;
+        }
+
+        body{
+            background:#eef2f7;
+            color:#0f172a;
+        }
+
+        .layout{
+            display:grid;
+            grid-template-columns:280px 1fr;
+            min-height:100vh;
+        }
+
+        .sidebar{
+            background:#020617;
+            color:#fff;
+            padding:22px 18px;
+            display:flex;
+            flex-direction:column;
+        }
+
+        .brand{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin-bottom:26px;
+        }
+
+        .brand-logo{
+            width:52px;
+            height:52px;
+            border-radius:18px;
+            background:#facc15;
+            color:#0f172a;
+            display:grid;
+            place-items:center;
+            font-size:26px;
+            font-weight:800;
+        }
+
+        .brand h2{
+            font-size:18px;
+            margin-bottom:2px;
+        }
+
+        .brand p{
+            color:#94a3b8;
+            font-size:13px;
+        }
+
+        .user-box{
+            background:rgba(255,255,255,.06);
+            border:1px solid rgba(255,255,255,.08);
+            padding:14px;
+            border-radius:18px;
+            margin-bottom:20px;
+        }
+
+        .user-box span{
+            display:block;
+            color:#94a3b8;
+            font-size:12px;
+            margin-bottom:6px;
+        }
+
+        .nav{
+            display:grid;
+            gap:10px;
+        }
+
+        .nav a{
+            text-decoration:none;
+            color:#e2e8f0;
+            background:transparent;
+            padding:14px 14px;
+            border-radius:16px;
+            transition:.2s ease;
+            font-size:14px;
+            font-weight:600;
+        }
+
+        .nav a:hover,
+        .nav a.active{
+            background:rgba(255,255,255,.08);
+        }
+
+        .logout{
+            margin-top:auto;
+        }
+
+        .logout a{
+            display:block;
+            text-decoration:none;
+            text-align:center;
+            background:#ef4444;
+            color:#fff;
+            padding:14px;
+            border-radius:16px;
+            font-weight:700;
+        }
+
+        .main{
+            padding:24px;
+        }
+
+        .topbar{
+            background:#fff;
+            border-radius:26px;
+            padding:22px 24px;
+            box-shadow:0 10px 30px rgba(15,23,42,.06);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:18px;
+            margin-bottom:22px;
+        }
+
+        .topbar h1{
+            font-size:30px;
+            margin-bottom:6px;
+        }
+
+        .topbar p{
+            color:#64748b;
+            font-size:14px;
+        }
+
+        .btn-back{
+            text-decoration:none;
+            background:#e2e8f0;
+            color:#0f172a;
+            padding:12px 16px;
+            border-radius:14px;
+            font-weight:600;
+        }
+
+        .card{
+            background:#fff;
+            border-radius:26px;
+            padding:22px;
+            box-shadow:0 10px 30px rgba(15,23,42,.06);
+            margin-bottom:20px;
+        }
+
+        .card h2{
+            font-size:22px;
+            margin-bottom:8px;
+        }
+
+        .card p.sub{
+            color:#64748b;
+            font-size:14px;
+            margin-bottom:18px;
+        }
+
+        .table-wrap{
+            overflow:auto;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th{
+            background:#f8fafc;
+            text-align:left;
+            padding:14px 12px;
+            font-size:14px;
+            color:#475569;
+        }
+
+        td{
+            padding:14px 12px;
+            border-bottom:1px solid #e2e8f0;
+            font-size:14px;
+        }
+
+        .btn{
+            border:none;
+            border-radius:14px;
+            padding:11px 14px;
+            font-weight:700;
+            cursor:pointer;
+            transition:.2s ease;
+        }
+
+        .btn-green{
+            background:#16a34a;
+            color:#fff;
+        }
+
+        .btn-green:hover{
+            background:#15803d;
+        }
+
+        .status{
+            display:inline-block;
+            padding:8px 12px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:700;
+        }
+
+        .status-pendiente{
+            background:#fef3c7;
+            color:#b45309;
+        }
+
+        .status-pagado{
+            background:#dcfce7;
+            color:#15803d;
+        }
+
+        .muted{
+            color:#64748b;
+        }
+
+        @media (max-width: 850px){
+            .layout{
+                grid-template-columns:1fr;
+            }
+
+            .topbar{
+                flex-direction:column;
+                align-items:flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">🌮</div>
+            <div>
+                <h2>Taquería Sistema</h2>
+                <p>Gestión de ventas</p>
+            </div>
+        </div>
+
+        <div class="user-box">
+            <span>Sesión activa</span>
+            <strong>{{ usuario }}</strong>
+            <div style="margin-top:6px; color:#cbd5e1; font-size:13px;">Rol: {{ rol }}</div>
+        </div>
+
+        <nav class="nav">
+            <a href="/dashboard">🏠 Dashboard</a>
+            {% if rol == 'admin' %}
+            <a href="/productos">📦 Productos</a>
+            <a href="/pedidos">🧾 Pedidos</a>
+            {% endif %}
+            <a href="/ventas" class="active">💰 Ventas</a>
+        </nav>
+
+        <div class="logout">
+            <a href="/logout">Cerrar sesión</a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Ventas</h1>
+                <p>Cobra pedidos pendientes y revisa el historial de ventas registradas.</p>
+            </div>
+            <a href="/dashboard" class="btn-back">⬅ Volver</a>
+        </div>
+
+        <section class="card">
+            <h2>Pedidos pendientes</h2>
+            <p class="sub">Pedidos listos para cobrar.</p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Pedido</th>
+                            <th>Fecha</th>
+                            <th>Mesa</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                        <tr>
+                            <td>#{{ pedido.id_pedido }}</td>
+                            <td>{{ pedido.fecha | fecha_bonita }}</td>
+                            <td>{{ pedido.mesa }}</td>
+                            <td>${{ pedido.total }}</td>
+                            <td><span class="status status-pendiente">Pendiente</span></td>
+                            <td>
+                                <form action="/cobrar_pedido/{{ pedido.id_pedido }}" method="POST" onsubmit="return confirm('¿Cobrar este pedido?');">
+                                    <button type="submit" class="btn btn-green">Cobrar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="muted">No hay pedidos pendientes.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Historial de ventas</h2>
+            <p class="sub">Ventas registradas en el sistema.</p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Venta</th>
+                            <th>ID Pedido</th>
+                            <th>Total</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venta in ventas %}
+                        <tr>
+                            <td>#{{ venta.id_venta }}</td>
+                            <td>#{{ venta.id_pedido }}</td>
+                            <td>${{ venta.total }}</td>
+                            <td>{{ venta.fecha | fecha_bonita }}</td>
+                            <td><span class="status status-pagado">Pagado</span></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="muted">No hay ventas registradas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

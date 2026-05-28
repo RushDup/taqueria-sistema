@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cajero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+            font-family:'Inter',sans-serif;
+        }
+
+        body{
+            background:#eef2f7;
+            color:#0f172a;
+        }
+
+        .layout{
+            display:grid;
+            grid-template-columns:280px 1fr;
+            min-height:100vh;
+        }
+
+        .sidebar{
+            background:#020617;
+            color:#fff;
+            padding:22px 18px;
+            display:flex;
+            flex-direction:column;
+        }
+
+        .brand{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin-bottom:26px;
+        }
+
+        .brand-logo{
+            width:52px;
+            height:52px;
+            border-radius:18px;
+            background:#facc15;
+            color:#0f172a;
+            display:grid;
+            place-items:center;
+            font-size:26px;
+            font-weight:800;
+        }
+
+        .brand h2{
+            font-size:18px;
+            margin-bottom:2px;
+        }
+
+        .brand p{
+            color:#94a3b8;
+            font-size:13px;
+        }
+
+        .user-box{
+            background:rgba(255,255,255,.06);
+            border:1px solid rgba(255,255,255,.08);
+            padding:14px;
+            border-radius:18px;
+            margin-bottom:20px;
+        }
+
+        .user-box span{
+            display:block;
+            color:#94a3b8;
+            font-size:12px;
+            margin-bottom:6px;
+        }
+
+        .nav{
+            display:grid;
+            gap:10px;
+        }
+
+        .nav a{
+            text-decoration:none;
+            color:#e2e8f0;
+            background:transparent;
+            padding:14px 14px;
+            border-radius:16px;
+            transition:.2s ease;
+            font-size:14px;
+            font-weight:600;
+        }
+
+        .nav a:hover{
+            background:rgba(255,255,255,.08);
+        }
+
+        .logout{
+            margin-top:auto;
+        }
+
+        .logout a{
+            display:block;
+            text-decoration:none;
+            text-align:center;
+            background:#ef4444;
+            color:#fff;
+            padding:14px;
+            border-radius:16px;
+            font-weight:700;
+        }
+
+        .main{
+            padding:24px;
+        }
+
+        .topbar{
+            background:#fff;
+            border-radius:26px;
+            padding:22px 24px;
+            box-shadow:0 10px 30px rgba(15,23,42,.06);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:18px;
+            margin-bottom:22px;
+        }
+
+        .topbar h1{
+            font-size:30px;
+            margin-bottom:6px;
+        }
+
+        .topbar p{
+            color:#64748b;
+            font-size:14px;
+        }
+
+        .search{
+            width:280px;
+            padding:14px 16px;
+            border-radius:16px;
+            border:1px solid #dbe3ee;
+            background:#f8fafc;
+            outline:none;
+        }
+
+        .stats{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:18px;
+            margin-bottom:24px;
+        }
+
+        .stat-card{
+            background:#fff;
+            border-radius:24px;
+            padding:22px;
+            box-shadow:0 10px 28px rgba(15,23,42,.06);
+            transition:.2s ease;
+        }
+
+        .stat-card:hover{
+            transform:translateY(-3px);
+        }
+
+        .stat-card span{
+            display:block;
+            color:#64748b;
+            font-size:13px;
+            margin-bottom:10px;
+        }
+
+        .stat-card h3{
+            font-size:34px;
+            margin-bottom:6px;
+        }
+
+        .stat-card p{
+            color:#94a3b8;
+            font-size:12px;
+        }
+
+        .modules{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:18px;
+        }
+
+        .module-card{
+            background:#fff;
+            border-radius:24px;
+            padding:22px;
+            box-shadow:0 10px 28px rgba(15,23,42,.06);
+            transition:.2s ease;
+            text-decoration:none;
+            color:#0f172a;
+        }
+
+        .module-card:hover{
+            transform:translateY(-4px);
+            box-shadow:0 16px 36px rgba(15,23,42,.10);
+        }
+
+        .module-icon{
+            width:54px;
+            height:54px;
+            border-radius:18px;
+            background:#f8fafc;
+            display:grid;
+            place-items:center;
+            font-size:24px;
+            margin-bottom:16px;
+        }
+
+        .module-card h3{
+            font-size:20px;
+            margin-bottom:8px;
+        }
+
+        .module-card p{
+            color:#64748b;
+            font-size:14px;
+            line-height:1.6;
+        }
+
+        @media (max-width: 1100px){
+            .stats{
+                grid-template-columns:1fr;
+            }
+
+            .modules{
+                grid-template-columns:1fr;
+            }
+        }
+
+        @media (max-width: 850px){
+            .layout{
+                grid-template-columns:1fr;
+            }
+
+            .sidebar{
+                padding:18px;
+            }
+
+            .topbar{
+                flex-direction:column;
+                align-items:flex-start;
+            }
+
+            .search{
+                width:100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">🌮</div>
+            <div>
+                <h2>Taquería Sistema</h2>
+                <p>Panel de cajero</p>
+            </div>
+        </div>
+
+        <div class="user-box">
+            <span>Sesión activa</span>
+            <strong>{{ usuario }}</strong>
+            <div style="margin-top:6px; color:#cbd5e1; font-size:13px;">Rol: {{ rol }}</div>
+        </div>
+
+        <nav class="nav">
+            <a href="/dashboard">🏠 Dashboard</a>
+            <a href="/ventas">💰 Ventas</a>
+        </nav>
+
+        <div class="logout">
+            <a href="/logout">Cerrar sesión</a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Panel de cajero</h1>
+                <p>Gestiona cobros, revisa ventas registradas y consulta ingresos del sistema.</p>
+            </div>
+            <input type="text" class="search" placeholder="Buscar venta o pedido">
+        </div>
+
+        <section class="stats">
+            <div class="stat-card">
+                <span>Ventas</span>
+                <h3>{{ stats.total_ventas }}</h3>
+                <p>Ventas registradas en el sistema</p>
+            </div>
+
+            <div class="stat-card">
+                <span>Ingresos</span>
+                <h3>${{ stats.ingresos }}</h3>
+                <p>Total acumulado de ventas</p>
+            </div>
+
+            <div class="stat-card">
+                <span>Pedidos pendientes</span>
+                <h3>{{ stats.pedidos_pendientes }}</h3>
+                <p>Pedidos listos para cobrar</p>
+            </div>
+        </section>
+
+        <section class="modules">
+            <a href="/ventas" class="module-card">
+                <div class="module-icon">💰</div>
+                <h3>Ventas</h3>
+                <p>Cobra pedidos pendientes, genera tickets y consulta el historial de ventas.</p>
+            </a>
+
+            <div class="module-card" style="cursor:default;">
+                <div class="module-icon">📊</div>
+                <h3>Resumen</h3>
+                <p>Este rol está orientado al cobro y al seguimiento de ingresos dentro del sistema.</p>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>
