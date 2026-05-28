@@ -123,6 +123,7 @@ def login():
         db.close()
 
         if user:
+
             session["usuario"] = user["usuario"]
             session["rol"] = user["rol"]
 
@@ -298,7 +299,6 @@ def pedidos():
         producto_id = request.form["producto"]
         cantidad = int(request.form["cantidad"])
 
-        # Crear pedido actual
         if "pedido_actual_id" not in session:
 
             cursor.execute(
@@ -472,6 +472,35 @@ def finalizar_pedido():
 
 
 # =========================
+# CANCELAR PEDIDO
+# =========================
+@app.route("/cancelar_pedido/<int:id_pedido>", methods=["POST"])
+def cancelar_pedido(id_pedido):
+
+    if "usuario" not in session:
+        return redirect("/")
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute(
+        """
+        UPDATE pedidos
+        SET estado='cancelado'
+        WHERE id_pedido=%s
+        """,
+        (id_pedido,)
+    )
+
+    db.commit()
+
+    cursor.close()
+    db.close()
+
+    return redirect("/pedidos")
+
+
+# =========================
 # VENTAS
 # =========================
 @app.route("/ventas")
@@ -483,7 +512,6 @@ def ventas():
     db = get_db()
     cursor = db.cursor(cursor_factory=RealDictCursor)
 
-    # Pedidos pendientes
     cursor.execute(
         """
         SELECT
@@ -507,7 +535,6 @@ def ventas():
 
     pedidos = cursor.fetchall()
 
-    # Historial ventas
     cursor.execute(
         """
         SELECT *
