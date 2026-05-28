@@ -1,3 +1,4 @@
+```python
 from flask import Flask, render_template, request, redirect, session
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -54,6 +55,7 @@ def obtener_estadisticas():
     cursor.execute(
         "SELECT COUNT(*) AS total_productos FROM productos"
     )
+
     total_productos = cursor.fetchone()["total_productos"]
 
     cursor.execute(
@@ -270,6 +272,132 @@ def productos():
 
 
 # =========================
+# EDITAR PRODUCTO
+# =========================
+@app.route("/editar_producto/<int:id_producto>", methods=["GET", "POST"])
+def editar_producto(id_producto):
+
+    if "usuario" not in session:
+        return redirect("/")
+
+    if session["rol"] != "admin":
+        return "⛔ Acceso denegado"
+
+    db = get_db()
+    cursor = db.cursor(cursor_factory=RealDictCursor)
+
+    if request.method == "POST":
+
+        nombre = request.form["nombre"]
+        precio = request.form["precio"]
+        categoria = request.form["categoria"]
+
+        imagen = request.files.get("imagen")
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM productos
+            WHERE id_producto=%s
+            """,
+            (id_producto,)
+        )
+
+        producto_actual = cursor.fetchone()
+
+        nombre_imagen = producto_actual["imagen"]
+
+        if imagen and imagen.filename != "":
+
+            nombre_imagen = imagen.filename
+
+            ruta = os.path.join(
+                app.config["UPLOAD_FOLDER"],
+                nombre_imagen
+            )
+
+            imagen.save(ruta)
+
+        cursor.execute(
+            """
+            UPDATE productos
+            SET
+                nombre=%s,
+                precio=%s,
+                categoria=%s,
+                imagen=%s
+            WHERE id_producto=%s
+            """,
+            (
+                nombre,
+                precio,
+                categoria,
+                nombre_imagen,
+                id_producto
+            )
+        )
+
+        db.commit()
+
+        cursor.close()
+        db.close()
+
+        return redirect("/productos")
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM productos
+        WHERE id_producto=%s
+        """,
+        (id_producto,)
+    )
+
+    producto = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    return render_template(
+        "editar_producto.html",
+        producto=producto,
+        usuario=session["usuario"],
+        rol=session["rol"]
+    )
+
+
+# =========================
+# ELIMINAR PRODUCTO
+# =========================
+@app.route("/eliminar_producto/<int:id_producto>", methods=["POST"])
+def eliminar_producto(id_producto):
+
+    if "usuario" not in session:
+        return redirect("/")
+
+    if session["rol"] != "admin":
+        return "⛔ Acceso denegado"
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute(
+        """
+        DELETE FROM productos
+        WHERE id_producto=%s
+        """,
+        (id_producto,)
+    )
+
+    db.commit()
+
+    cursor.close()
+    db.close()
+
+    return redirect("/productos")
+
+
+# =========================
 # PEDIDOS
 # =========================
 @app.route("/pedidos", methods=["GET", "POST"])
@@ -291,9 +419,6 @@ def pedidos():
 
     productos = cursor.fetchall()
 
-    # =========================
-    # AGREGAR PRODUCTO
-    # =========================
     if request.method == "POST":
 
         producto_id = request.form["producto"]
@@ -358,9 +483,6 @@ def pedidos():
 
         return redirect("/pedidos")
 
-    # =========================
-    # PEDIDO ACTUAL
-    # =========================
     pedido_actual_id = session.get("pedido_actual_id")
 
     detalles_actuales = []
@@ -397,9 +519,6 @@ def pedidos():
 
         total_actual = cursor.fetchone()["total"]
 
-    # =========================
-    # HISTORIAL PEDIDOS
-    # =========================
     cursor.execute(
         """
         SELECT
