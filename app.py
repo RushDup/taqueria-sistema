@@ -27,12 +27,16 @@ def get_db():
 # =========================
 @app.template_filter("fecha_bonita")
 def fecha_bonita(value):
+
     if not value:
         return ""
 
     if isinstance(value, str):
         try:
-            value = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+            value = datetime.strptime(
+                value,
+                "%Y-%m-%d %H:%M:%S"
+            )
         except:
             return value
 
@@ -43,21 +47,38 @@ def fecha_bonita(value):
 # ESTADÍSTICAS
 # =========================
 def obtener_estadisticas():
+
     db = get_db()
     cursor = db.cursor(cursor_factory=RealDictCursor)
 
-    cursor.execute("SELECT COUNT(*) AS total_productos FROM productos")
+    cursor.execute(
+        "SELECT COUNT(*) AS total_productos FROM productos"
+    )
     total_productos = cursor.fetchone()["total_productos"]
 
     cursor.execute(
-        "SELECT COUNT(*) AS pedidos_pendientes FROM pedidos WHERE estado='pendiente'"
+        """
+        SELECT COUNT(*) AS pedidos_pendientes
+        FROM pedidos
+        WHERE estado='pendiente'
+        """
     )
+
     pedidos_pendientes = cursor.fetchone()["pedidos_pendientes"]
 
-    cursor.execute("SELECT COUNT(*) AS total_ventas FROM ventas")
+    cursor.execute(
+        "SELECT COUNT(*) AS total_ventas FROM ventas"
+    )
+
     total_ventas = cursor.fetchone()["total_ventas"]
 
-    cursor.execute("SELECT COALESCE(SUM(total), 0) AS ingresos FROM ventas")
+    cursor.execute(
+        """
+        SELECT COALESCE(SUM(total),0) AS ingresos
+        FROM ventas
+        """
+    )
+
     ingresos = cursor.fetchone()["ingresos"]
 
     cursor.close()
@@ -87,8 +108,10 @@ def login():
 
         cursor.execute(
             """
-            SELECT * FROM usuarios
-            WHERE usuario=%s AND password=%s
+            SELECT *
+            FROM usuarios
+            WHERE usuario=%s
+            AND password=%s
             LIMIT 1
             """,
             (usuario, password)
@@ -102,6 +125,7 @@ def login():
         if user:
             session["usuario"] = user["usuario"]
             session["rol"] = user["rol"]
+
             return redirect("/dashboard")
 
         return render_template(
@@ -117,7 +141,9 @@ def login():
 # =========================
 @app.route("/logout")
 def logout():
+
     session.clear()
+
     return redirect("/")
 
 
@@ -136,6 +162,7 @@ def dashboard():
     stats = obtener_estadisticas()
 
     if rol == "admin":
+
         return render_template(
             "dashboard_admin.html",
             usuario=usuario,
@@ -144,6 +171,7 @@ def dashboard():
         )
 
     elif rol == "mesero":
+
         return render_template(
             "dashboard_mesero.html",
             usuario=usuario,
@@ -152,6 +180,7 @@ def dashboard():
         )
 
     elif rol == "cajero":
+
         return render_template(
             "dashboard_cajero.html",
             usuario=usuario,
@@ -187,6 +216,7 @@ def productos():
         nombre_imagen = None
 
         if imagen and imagen.filename != "":
+
             nombre_imagen = imagen.filename
 
             ruta = os.path.join(
@@ -202,7 +232,12 @@ def productos():
             (nombre, precio, categoria, imagen)
             VALUES (%s, %s, %s, %s)
             """,
-            (nombre, precio, categoria, nombre_imagen)
+            (
+                nombre,
+                precio,
+                categoria,
+                nombre_imagen
+            )
         )
 
         db.commit()
@@ -212,7 +247,14 @@ def productos():
 
         return redirect("/productos")
 
-    cursor.execute("SELECT * FROM productos ORDER BY id_producto DESC")
+    cursor.execute(
+        """
+        SELECT *
+        FROM productos
+        ORDER BY id_producto DESC
+        """
+    )
+
     productos = cursor.fetchall()
 
     cursor.close()
@@ -238,37 +280,49 @@ def pedidos():
     db = get_db()
     cursor = db.cursor(cursor_factory=RealDictCursor)
 
-    cursor.execute("SELECT * FROM productos ORDER BY nombre")
+    cursor.execute(
+        """
+        SELECT *
+        FROM productos
+        ORDER BY nombre
+        """
+    )
+
     productos = cursor.fetchall()
 
+    # =========================
+    # AGREGAR PRODUCTO
+    # =========================
     if request.method == "POST":
 
         producto_id = request.form["producto"]
         cantidad = int(request.form["cantidad"])
 
-        # Crear pedido actual si no existe
+        # Crear pedido actual
         if "pedido_actual_id" not in session:
 
             cursor.execute(
                 """
-                INSERT INTO pedidos (mesa, estado)
+                INSERT INTO pedidos
+                (mesa, estado)
                 VALUES (%s, %s)
                 RETURNING id_pedido
                 """,
                 (1, "en_armado")
             )
 
-            pedido_id = cursor.fetchone()["id_pedido"]
+            pedido = cursor.fetchone()
+
+            session["pedido_actual_id"] = pedido["id_pedido"]
 
             db.commit()
-
-            session["pedido_actual_id"] = pedido_id
 
         pedido_actual_id = session["pedido_actual_id"]
 
         cursor.execute(
             """
-            SELECT * FROM productos
+            SELECT *
+            FROM productos
             WHERE id_producto=%s
             """,
             (producto_id,)
@@ -281,7 +335,12 @@ def pedidos():
         cursor.execute(
             """
             INSERT INTO detalle_pedido
-            (id_pedido, id_producto, cantidad, subtotal)
+            (
+                id_pedido,
+                id_producto,
+                cantidad,
+                subtotal
+            )
             VALUES (%s, %s, %s, %s)
             """,
             (
@@ -299,6 +358,9 @@ def pedidos():
 
         return redirect("/pedidos")
 
+    # =========================
+    # PEDIDO ACTUAL
+    # =========================
     pedido_actual_id = session.get("pedido_actual_id")
 
     detalles_actuales = []
@@ -325,7 +387,8 @@ def pedidos():
 
         cursor.execute(
             """
-            SELECT COALESCE(SUM(subtotal),0) AS total
+            SELECT
+                COALESCE(SUM(subtotal),0) AS total
             FROM detalle_pedido
             WHERE id_pedido = %s
             """,
@@ -333,6 +396,31 @@ def pedidos():
         )
 
         total_actual = cursor.fetchone()["total"]
+
+    # =========================
+    # HISTORIAL PEDIDOS
+    # =========================
+    cursor.execute(
+        """
+        SELECT
+            p.id_pedido,
+            p.fecha,
+            p.mesa,
+            p.estado,
+            COALESCE(SUM(d.subtotal),0) AS total
+        FROM pedidos p
+        LEFT JOIN detalle_pedido d
+            ON p.id_pedido = d.id_pedido
+        GROUP BY
+            p.id_pedido,
+            p.fecha,
+            p.mesa,
+            p.estado
+        ORDER BY p.id_pedido DESC
+        """
+    )
+
+    lista_pedidos = cursor.fetchall()
 
     cursor.close()
     db.close()
@@ -343,6 +431,7 @@ def pedidos():
         detalles_actuales=detalles_actuales,
         total_actual=total_actual,
         pedido_actual_id=pedido_actual_id,
+        pedidos=lista_pedidos,
         usuario=session["usuario"],
         rol=session["rol"]
     )
@@ -366,7 +455,10 @@ def finalizar_pedido():
         SET estado=%s
         WHERE id_pedido=%s
         """,
-        ("pendiente", session["pedido_actual_id"])
+        (
+            "pendiente",
+            session["pedido_actual_id"]
+        )
     )
 
     db.commit()
@@ -391,23 +483,40 @@ def ventas():
     db = get_db()
     cursor = db.cursor(cursor_factory=RealDictCursor)
 
+    # Pedidos pendientes
     cursor.execute(
         """
         SELECT
             p.id_pedido,
             p.fecha,
             p.mesa,
+            p.estado,
             COALESCE(SUM(d.subtotal),0) AS total
         FROM pedidos p
         LEFT JOIN detalle_pedido d
             ON p.id_pedido = d.id_pedido
         WHERE p.estado='pendiente'
-        GROUP BY p.id_pedido
+        GROUP BY
+            p.id_pedido,
+            p.fecha,
+            p.mesa,
+            p.estado
         ORDER BY p.id_pedido DESC
         """
     )
 
     pedidos = cursor.fetchall()
+
+    # Historial ventas
+    cursor.execute(
+        """
+        SELECT *
+        FROM ventas
+        ORDER BY id_venta DESC
+        """
+    )
+
+    historial_ventas = cursor.fetchall()
 
     cursor.close()
     db.close()
@@ -415,6 +524,7 @@ def ventas():
     return render_template(
         "ventas.html",
         pedidos=pedidos,
+        ventas=historial_ventas,
         usuario=session["usuario"],
         rol=session["rol"]
     )
@@ -431,7 +541,8 @@ def cobrar_pedido(id_pedido):
 
     cursor.execute(
         """
-        SELECT COALESCE(SUM(subtotal),0) AS total
+        SELECT
+            COALESCE(SUM(subtotal),0) AS total
         FROM detalle_pedido
         WHERE id_pedido=%s
         """,
@@ -444,7 +555,8 @@ def cobrar_pedido(id_pedido):
 
     cursor.execute(
         """
-        INSERT INTO ventas (id_pedido, total)
+        INSERT INTO ventas
+        (id_pedido, total)
         VALUES (%s, %s)
         RETURNING id_venta
         """,
@@ -490,7 +602,7 @@ def ticket(id_venta):
         FROM ventas v
         INNER JOIN pedidos p
             ON v.id_pedido = p.id_pedido
-        WHERE v.id_venta = %s
+        WHERE v.id_venta=%s
         """,
         (id_venta,)
     )
@@ -506,7 +618,7 @@ def ticket(id_venta):
         FROM detalle_pedido d
         INNER JOIN productos pr
             ON d.id_producto = pr.id_producto
-        WHERE d.id_pedido = %s
+        WHERE d.id_pedido=%s
         """,
         (encabezado["id_pedido"],)
     )
